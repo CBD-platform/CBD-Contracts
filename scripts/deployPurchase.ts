@@ -6,12 +6,13 @@ const hre = require("hardhat");
 
 async function main() {
   // goerliCBD = 0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
-  // goerliPurchase = 0x2F49676E78f0480889A87603e971C13C7058C11e
+  // goerliPurchase = 0x0700620130188a8F463f8d54139ED3f5F589Ad35
   const Purchase = await ethers.getContractFactory("Purchase");
   const purchase = await Purchase.deploy(
     process.env.GOERLI_CBD as string,
     process.env.GOERLI_USDC as string,
-    `${20*10**18}`
+    `${20*10**18}`,
+    process.env.GOERLI_USDC_ORACLE as string
   );
 
   await purchase.deployed();
@@ -26,7 +27,8 @@ async function main() {
     constructorArguments: [
         process.env.GOERLI_CBD as string,
         process.env.GOERLI_USDC as string,
-        `${20*10**18}`
+        `${20*10**18}`,
+        process.env.GOERLI_USDC_ORACLE as string
     ],
   })
   console.log("Contract verified successfully !")

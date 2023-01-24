@@ -8,7 +8,7 @@ goerli-CBD:
 https://goerli.etherscan.io/address/0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
 
 goerli-purchase:
-https://goerli.etherscan.io/address/0x2F49676E78f0480889A87603e971C13C7058C11e
+https://goerli.etherscan.io/address/0x0700620130188a8F463f8d54139ED3f5F589Ad35
 
 ```shell
 npx hardhat help

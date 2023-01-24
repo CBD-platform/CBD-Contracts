@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CBDToken is ERC20, ERC20Burnable, Ownable {
 
-    
+
 
     mapping(address => bool) public distributors; //is given address distributor 
 
@@ -15,7 +15,12 @@ contract CBDToken is ERC20, ERC20Burnable, Ownable {
     @param _name : token name
     @param _symbol : token symbol
      */
-    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) {}
+    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) {
+    }
+
+
+    
+
 
 
     /**
