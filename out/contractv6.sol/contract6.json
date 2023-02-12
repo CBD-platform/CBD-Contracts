@@ -1,0 +1,189 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60806040526004600055348015601457600080fd5b506081806100236000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c806306fdde0314602d575b600080fd5b60336045565b60408051918252519081900360200190f35b6000548156fea2646970667358221220f7b4d575d38d4ad23ad0935b268e583316f7dce40d1a5b892f6c57d0b268d42064736f6c634300060c0033",
+    "sourceMap": "60:50:0:-:0;;;105:1;86:20;;60:50;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c806306fdde0314602d575b600080fd5b60336045565b60408051918252519081900360200190f35b6000548156fea2646970667358221220f7b4d575d38d4ad23ad0935b268e583316f7dce40d1a5b892f6c57d0b268d42064736f6c634300060c0033",
+    "sourceMap": "60:50:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;86:20;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;:::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "name()": "06fdde03"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/test/contractv6.sol\":\"contract6\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@chainlink/=node_modules/@chainlink/\",\":@eth-optimism/=node_modules/@eth-optimism/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/test/contractv6.sol\":{\"keccak256\":\"0x877f5738a92532fbdb73c358943d582c1b4ed58abeff1e3c2faa8d602d1b466a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c469ee712019069fc1e5b91dc4c2be8056d2fa785c2271455f4d5b708c5cd7cd\",\"dweb:/ipfs/QmZRwnAvuVdmmkNBje7tgzT9zVCM2rMtQAbpZVGwps25Zy\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.6.12+commit.27d51765"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "name",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@chainlink/=node_modules/@chainlink/",
+        ":@eth-optimism/=node_modules/@eth-optimism/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":forge-std/=lib/forge-std/src/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/test/contractv6.sol": "contract6"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/test/contractv6.sol": {
+        "keccak256": "0x877f5738a92532fbdb73c358943d582c1b4ed58abeff1e3c2faa8d602d1b466a",
+        "urls": [
+          "bzz-raw://c469ee712019069fc1e5b91dc4c2be8056d2fa785c2271455f4d5b708c5cd7cd",
+          "dweb:/ipfs/QmZRwnAvuVdmmkNBje7tgzT9zVCM2rMtQAbpZVGwps25Zy"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/test/contractv6.sol",
+    "id": 6,
+    "exportedSymbols": {
+      "contract6": [
+        5
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:77:0",
+    "nodes": [
+      {
+        "id": 1,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:0",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ]
+      },
+      {
+        "id": 5,
+        "nodeType": "ContractDefinition",
+        "src": "60:50:0",
+        "nodes": [
+          {
+            "id": 4,
+            "nodeType": "VariableDeclaration",
+            "src": "86:20:0",
+            "nodes": [],
+            "constant": false,
+            "functionSelector": "06fdde03",
+            "mutability": "mutable",
+            "name": "name",
+            "overrides": null,
+            "scope": 5,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "86:4:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "34",
+              "id": 3,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "105:1:0",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_4_by_1",
+                "typeString": "int_const 4"
+              },
+              "value": "4"
+            },
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          5
+        ],
+        "name": "contract6",
+        "scope": 6
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 0
+}

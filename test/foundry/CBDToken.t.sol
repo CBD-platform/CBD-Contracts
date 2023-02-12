@@ -192,6 +192,139 @@ contract CBDTokenTest is Test {
         );
     }
 
+    function testPartailPurchaseRewards() public {
+        // buy token add1
+        vm.startPrank(add1);
+        usdc.approve(address(purchaseContract), 500e18);
+        purchaseContract.buyToken(500e18, address(0));
+        assertEq(cbdToken.balanceOf(add1), 25e18);
+        assertEq(usdc.balanceOf(add1), 500e18);
+        vm.stopPrank();
+
+        // buy token add2
+        vm.startPrank(add2);
+        usdc.approve(address(purchaseContract), 500e18);
+        purchaseContract.buyToken(500e18, add1);
+        assertEq(cbdToken.balanceOf(add2), 25e18);
+        assertEq(usdc.balanceOf(add2), 500e18);
+    
+        assertEq(cbdToken.balanceOf(add1), 25e18 + 5e18*500e18/1000e18);
+        assertEq(purchaseContract.allRewardAmounts(add1), reward1*500e18/1000e18);
+        vm.stopPrank();
+
+        // buy token add3
+        vm.startPrank(add3);
+        usdc.approve(address(purchaseContract), 500e18);
+        purchaseContract.buyToken(500e18, add2);
+        assertEq(cbdToken.balanceOf(add3), 25e18);
+        assertEq(usdc.balanceOf(add3), 500e18);
+        assertEq(cbdToken.balanceOf(add2), 25e18 + 5e18*500e18/1000e18);
+        assertEq(purchaseContract.allRewardAmounts(add1), reward1*500e18/1000e18 + reward2*500e18/1000e18);
+        assertEq(purchaseContract.allRewardAmounts(add2), reward1*500e18/1000e18);
+        vm.stopPrank();
+        // console.log("time", block.timestamp + 1095 days);
+        // buy token add4
+        vm.startPrank(add4);
+        usdc.approve(address(purchaseContract), 500e18);
+        purchaseContract.buyToken(500e18, add3);
+        assertEq(cbdToken.balanceOf(add4), 25e18);
+        assertEq(usdc.balanceOf(add4), 500e18);
+        assertEq(cbdToken.balanceOf(add3), 25e18 + 5e18*500e18/1000e18);
+        assertEq(
+            purchaseContract.allRewardAmounts(add1),
+            reward1*500e18/1000e18 + reward2*500e18/1000e18 + reward3*500e18/1000e18
+        );
+        assertEq(purchaseContract.allRewardAmounts(add2), reward1*500e18/1000e18 + reward2*500e18/1000e18);
+        assertEq(purchaseContract.allRewardAmounts(add3), reward1*500e18/1000e18);
+        vm.stopPrank();
+
+        // buy token add5
+        vm.startPrank(add5);
+        usdc.approve(address(purchaseContract), 500e18);
+        purchaseContract.buyToken(500e18, add4);
+        assertEq(cbdToken.balanceOf(add5), 25e18);
+        assertEq(usdc.balanceOf(add5), 500e18);
+        assertEq(cbdToken.balanceOf(add4), 25e18 + 5e18*500e18/1000e18);
+        assertEq(
+            purchaseContract.allRewardAmounts(add1),
+            reward1*500e18/1000e18 + reward2*500e18/1000e18 + reward3*500e18/1000e18 + reward4*500e18/1000e18
+        );
+        assertEq(
+            purchaseContract.allRewardAmounts(add2),
+            reward1*500e18/1000e18 + reward2*500e18/1000e18 + reward3*500e18/1000e18
+        );
+        assertEq(purchaseContract.allRewardAmounts(add3), reward1*500e18/1000e18 + reward2*500e18/1000e18);
+        assertEq(purchaseContract.allRewardAmounts(add4), reward1*500e18/1000e18);
+        vm.stopPrank();
+        
+        // claim rewards
+        vm.startPrank(add1);
+        uint256 userReward1 = reward1*500e18/1000e18 + reward2*500e18/1000e18 + reward3*500e18/1000e18 + reward4*500e18/1000e18;
+        assertEq(purchaseContract.allRewardAmounts(add1), userReward1);
+        assertEq(purchaseContract.getUnclaimedRewards(add1), 0);
+        uint256 endTime = 1095 days;
+        skip(endTime);
+        assertEq(purchaseContract.getUnclaimedRewards(add1), userReward1);
+
+        purchaseContract.claimRewards();
+        assertEq(purchaseContract.allRewardAmounts(add1), 0);
+        assertEq(purchaseContract.getUnclaimedRewards(add1), 0);
+
+        vm.stopPrank();
+        usdc.transfer(add2, 500e18);
+        vm.startPrank(add2);
+        usdc.approve(address(purchaseContract), 500e18);
+        purchaseContract.buyToken(500e18, add1);
+        vm.stopPrank();
+
+        //claim for new rewards
+        vm.startPrank(add1);
+        uint256 first = block.timestamp;
+        uint256 end = block.timestamp + 1095 days;
+        uint256 balanceBeforeClaim = cbdToken.balanceOf(add1);
+        skip(547 days);
+        uint256 unclaimedRewardAmount = (reward1*500e18/1000e18 * (block.timestamp - first)) /
+            (end - first);
+        assertEq(purchaseContract.allRewardAmounts(add1), reward1*500e18/1000e18);
+        assertEq(
+            purchaseContract.getUnclaimedRewards(add1),
+            unclaimedRewardAmount
+        );
+        purchaseContract.claimRewards();
+        assertEq(
+            purchaseContract.allRewardAmounts(add1),
+            reward1*500e18/1000e18 - unclaimedRewardAmount
+        );
+        assertEq(purchaseContract.getUnclaimedRewards(add1), 0);
+        assertEq(
+            cbdToken.balanceOf(add1),
+            balanceBeforeClaim + unclaimedRewardAmount
+        );
+        
+    }
+
+
+    function testPartailPurchaseRewards2() public {
+        // buy token add1
+        vm.startPrank(add1);
+        usdc.approve(address(purchaseContract), 250e18);
+        purchaseContract.buyToken(250e18, address(0));
+        assertEq(cbdToken.balanceOf(add1), 125e17);
+        assertEq(usdc.balanceOf(add1), 750e18);
+        vm.stopPrank();
+
+        // buy token add2
+        vm.startPrank(add2);
+        usdc.approve(address(purchaseContract), 250e18);
+        purchaseContract.buyToken(250e18, add1);
+        assertEq(cbdToken.balanceOf(add2), 125e17);
+        assertEq(usdc.balanceOf(add2), 750e18);
+        assertEq(cbdToken.balanceOf(add1), 125e17 + 5e18*250e18/1000e18);
+        assertEq(purchaseContract.allRewardAmounts(add1), reward1*250e18/1000e18);
+        console.logUint(cbdToken.balanceOf(add1));
+        vm.stopPrank();
+    }
+
     function consoleRewards(address _user) public view {
         Purchase.UserRewards[] memory rewardS = purchaseContract.userRewards(
             _user

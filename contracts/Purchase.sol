@@ -44,6 +44,7 @@ contract Purchase is Ownable {
     mapping(address => address) public refer;
 
 
+    
     function scalePrice(
         int256 _price,
         uint8 _priceDecimals,
@@ -140,17 +141,18 @@ contract Purchase is Ownable {
         uint usdcOraclePrice = getOracleUsdcPrice();
         require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
         uint256 purchaseTokenDecimals = ERC20(purchaseToken).decimals();
-        require(
-            stableCoinAmount == 500 * 10**purchaseTokenDecimals ||
-                stableCoinAmount == 1000 * 10**purchaseTokenDecimals ||
-                stableCoinAmount == 2000 * 10**purchaseTokenDecimals, "Stable coin amount should be 500$ or 100$ or 2000$"
-        );
+        // require(
+        //     stableCoinAmount == 500 * 10**purchaseTokenDecimals ||
+        //         stableCoinAmount == 1000 * 10**purchaseTokenDecimals ||
+        //         stableCoinAmount == 2000 * 10**purchaseTokenDecimals, "Stable coin amount should be 500$ or 100$ or 2000$"
+        // );
         require(_refer != msg.sender, "You can't put your address as refer");
         require(
             IERC20(purchaseToken).balanceOf(msg.sender) >= stableCoinAmount,
             "You don't have enough stablecoin balance to buy"
         );
         uint256 quantity = (stableCoinAmount * 1e18) / tokenPrice;
+        uint256 baseQuantity = 1000*10**purchaseTokenDecimals* 1e18/tokenPrice;
         //perform purchase for user
         cbdToken.mint(msg.sender, quantity);
         SafeERC20.safeTransferFrom(
@@ -170,11 +172,11 @@ contract Purchase is Ownable {
             address refer4 = refer[refer3];
             // set refer1 rewards
             if (refer1 != address(0) && cbdToken.balanceOf(refer1) > 0) {
-                cbdToken.mint(refer1, 5e18);
+                cbdToken.mint(refer1, 5e18*quantity/baseQuantity);
                 rewards[refer1].push(
                     UserRewards(
-                        95e17,
-                        block.timestamp + (1095*24*60*60),
+                        95e17*quantity/baseQuantity,
+                        block.timestamp + 1095 days,
                         block.timestamp
                     )
                 );
@@ -183,7 +185,7 @@ contract Purchase is Ownable {
             if (refer2 != address(0) && cbdToken.balanceOf(refer2) > 0) {
                 rewards[refer2].push(
                     UserRewards(
-                        75e17,
+                        75e17*quantity/baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
@@ -193,7 +195,7 @@ contract Purchase is Ownable {
             if (refer3 != address(0) && cbdToken.balanceOf(refer3) > 0) {
                 rewards[refer3].push(
                     UserRewards(
-                        6e18,
+                        6e18*quantity/baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
@@ -203,13 +205,32 @@ contract Purchase is Ownable {
             if (refer4 != address(0) && cbdToken.balanceOf(refer4) > 0) {
                 rewards[refer4].push(
                     UserRewards(
-                        4e18,
+                        4e18*quantity/baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
                 );
             }
         }
+    }
+
+
+    function buyTokenWhitoutRef(uint256 stableCoinAmount) public {
+        uint usdcOraclePrice = getOracleUsdcPrice();
+        require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
+        require(
+            IERC20(purchaseToken).balanceOf(msg.sender) >= stableCoinAmount,
+            "You don't have enough stablecoin balance to buy"
+        );
+        uint256 quantity = (stableCoinAmount * 1e18) / tokenPrice;
+        //perform purchase for user
+        cbdToken.mint(msg.sender, quantity);
+        SafeERC20.safeTransferFrom(
+            IERC20(purchaseToken),
+            msg.sender,
+            owner(),
+            stableCoinAmount
+        );
     }
 
     function _deleteRewardObject(address _user, uint256 _rewardIndex) internal {

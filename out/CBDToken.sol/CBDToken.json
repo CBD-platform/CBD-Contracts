@@ -1096,22 +1096,22 @@
         113
       ],
       "Context": [
-        27716
+        27728
       ],
       "ERC20": [
-        26900
+        26912
       ],
       "ERC20Burnable": [
-        27022
+        27034
       ],
       "IERC20": [
-        26978
+        26990
       ],
       "IERC20Metadata": [
-        27047
+        27059
       ],
       "Ownable": [
-        26313
+        26325
       ]
     },
     "nodeType": "SourceUnit",
@@ -1138,7 +1138,7 @@
         "file": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 114,
-        "sourceUnit": 26901,
+        "sourceUnit": 26913,
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1151,7 +1151,7 @@
         "file": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 114,
-        "sourceUnit": 27023,
+        "sourceUnit": 27035,
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1164,7 +1164,7 @@
         "file": "@openzeppelin/contracts/access/Ownable.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 114,
-        "sourceUnit": 26314,
+        "sourceUnit": 26326,
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1278,7 +1278,7 @@
                     "539:5:0"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 26900,
+                  "referencedDeclaration": 26912,
                   "src": "539:5:0"
                 },
                 "nodeType": "ModifierInvocation",
@@ -1472,7 +1472,7 @@
                               "name": "owner",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 26241,
+                              "referencedDeclaration": 26253,
                               "src": "909:5:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -1505,7 +1505,7 @@
                               "name": "_msgSender",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 27706,
+                              "referencedDeclaration": 27718,
                               "src": "920:10:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -1558,7 +1558,7 @@
                               "name": "_msgSender",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 27706,
+                              "referencedDeclaration": 27718,
                               "src": "949:10:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -1789,7 +1789,7 @@
                     "1207:9:0"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 26232,
+                  "referencedDeclaration": 26244,
                   "src": "1207:9:0"
                 },
                 "nodeType": "ModifierInvocation",
@@ -1943,7 +1943,7 @@
                     "1331:9:0"
                   ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 26232,
+                  "referencedDeclaration": 26244,
                   "src": "1331:9:0"
                 },
                 "nodeType": "ModifierInvocation",
@@ -2052,7 +2052,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 26717,
+                      "referencedDeclaration": 26729,
                       "src": "1526:5:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -2231,7 +2231,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 26789,
+                      "referencedDeclaration": 26801,
                       "src": "1644:5:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -2367,7 +2367,7 @@
                 "271:5:0"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 26900,
+              "referencedDeclaration": 26912,
               "src": "271:5:0"
             },
             "id": 6,
@@ -2382,7 +2382,7 @@
                 "278:13:0"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 27022,
+              "referencedDeclaration": 27034,
               "src": "278:13:0"
             },
             "id": 8,
@@ -2397,7 +2397,7 @@
                 "293:7:0"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 26313,
+              "referencedDeclaration": 26325,
               "src": "293:7:0"
             },
             "id": 10,
@@ -2411,12 +2411,12 @@
         "fullyImplemented": true,
         "linearizedBaseContracts": [
           113,
-          26313,
-          27022,
-          26900,
-          27047,
-          26978,
-          27716
+          26325,
+          27034,
+          26912,
+          27059,
+          26990,
+          27728
         ],
         "name": "CBDToken",
         "nameLocation": "259:8:0",
