@@ -8,13 +8,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./CBDToken.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-
 contract Purchase is Ownable {
     CBDToken public cbdToken;
     address public purchaseToken;
     uint256 public tokenPrice;
-     AggregatorV3Interface public priceFeed;
-
+    AggregatorV3Interface public priceFeed;
 
     struct UserRewards {
         uint256 rewardAmount;
@@ -43,28 +41,25 @@ contract Purchase is Ownable {
     mapping(address => UserRewards[]) public rewards;
     mapping(address => address) public refer;
 
-
-    
     function scalePrice(
         int256 _price,
         uint8 _priceDecimals,
         uint8 _decimals
     ) internal pure returns (int256) {
         if (_priceDecimals < _decimals) {
-            return _price * int256(10 ** uint256(_decimals - _priceDecimals));
+            return _price * int256(10**uint256(_decimals - _priceDecimals));
         } else if (_priceDecimals > _decimals) {
-            return _price / int256(10 ** uint256(_priceDecimals - _decimals));
+            return _price / int256(10**uint256(_priceDecimals - _decimals));
         }
         return _price;
     }
 
-    function getOracleUsdcPrice() public view returns (uint) {
-        (,int price,,,) = priceFeed.latestRoundData();
+    function getOracleUsdcPrice() public view returns (uint256) {
+        (, int256 price, , , ) = priceFeed.latestRoundData();
         uint8 baseDecimals = priceFeed.decimals();
-        int basePrice = scalePrice(price, baseDecimals, 18);
-        return uint(basePrice);
+        int256 basePrice = scalePrice(price, baseDecimals, 18);
+        return uint256(basePrice);
     }
-
 
     //set purchase token
     function setPurchaseToken(address _purchaseToken) public onlyOwner {
@@ -138,21 +133,17 @@ contract Purchase is Ownable {
     @param _refer is an address that invite user with referral link to buy token
      */
     function buyToken(uint256 stableCoinAmount, address _refer) public {
-        uint usdcOraclePrice = getOracleUsdcPrice();
+        uint256 usdcOraclePrice = getOracleUsdcPrice();
         require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
         uint256 purchaseTokenDecimals = ERC20(purchaseToken).decimals();
-        // require(
-        //     stableCoinAmount == 500 * 10**purchaseTokenDecimals ||
-        //         stableCoinAmount == 1000 * 10**purchaseTokenDecimals ||
-        //         stableCoinAmount == 2000 * 10**purchaseTokenDecimals, "Stable coin amount should be 500$ or 100$ or 2000$"
-        // );
         require(_refer != msg.sender, "You can't put your address as refer");
         require(
             IERC20(purchaseToken).balanceOf(msg.sender) >= stableCoinAmount,
             "You don't have enough stablecoin balance to buy"
         );
         uint256 quantity = (stableCoinAmount * 1e18) / tokenPrice;
-        uint256 baseQuantity = 1000*10**purchaseTokenDecimals* 1e18/tokenPrice;
+        uint256 baseQuantity = (1000 * 10**purchaseTokenDecimals * 1e18) /
+            tokenPrice;
         //perform purchase for user
         cbdToken.mint(msg.sender, quantity);
         SafeERC20.safeTransferFrom(
@@ -172,10 +163,10 @@ contract Purchase is Ownable {
             address refer4 = refer[refer3];
             // set refer1 rewards
             if (refer1 != address(0) && cbdToken.balanceOf(refer1) > 0) {
-                cbdToken.mint(refer1, 5e18*quantity/baseQuantity);
+                cbdToken.mint(refer1, (5e18 * quantity) / baseQuantity);
                 rewards[refer1].push(
                     UserRewards(
-                        95e17*quantity/baseQuantity,
+                        (95e17 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
@@ -185,7 +176,7 @@ contract Purchase is Ownable {
             if (refer2 != address(0) && cbdToken.balanceOf(refer2) > 0) {
                 rewards[refer2].push(
                     UserRewards(
-                        75e17*quantity/baseQuantity,
+                        (75e17 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
@@ -195,7 +186,7 @@ contract Purchase is Ownable {
             if (refer3 != address(0) && cbdToken.balanceOf(refer3) > 0) {
                 rewards[refer3].push(
                     UserRewards(
-                        6e18*quantity/baseQuantity,
+                        (6e18 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
@@ -205,7 +196,7 @@ contract Purchase is Ownable {
             if (refer4 != address(0) && cbdToken.balanceOf(refer4) > 0) {
                 rewards[refer4].push(
                     UserRewards(
-                        4e18*quantity/baseQuantity,
+                        (4e18 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
                     )
@@ -214,9 +205,8 @@ contract Purchase is Ownable {
         }
     }
 
-
     function buyTokenWhitoutRef(uint256 stableCoinAmount) public {
-        uint usdcOraclePrice = getOracleUsdcPrice();
+        uint256 usdcOraclePrice = getOracleUsdcPrice();
         require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
         require(
             IERC20(purchaseToken).balanceOf(msg.sender) >= stableCoinAmount,
