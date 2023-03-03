@@ -12,6 +12,7 @@ contract Purchase is Ownable {
     CBDToken public cbdToken;
     address public purchaseToken;
     uint256 public tokenPrice;
+    uint256 public baseRegisterAmount = 50;
     AggregatorV3Interface public priceFeed;
 
     mapping(address => bool) public isRegistered;
@@ -78,6 +79,11 @@ contract Purchase is Ownable {
         cbdToken = CBDToken(_CBDToken);
     }
 
+    function setBaseRegisterAmount(uint256 _baseRegisterAmount) public onlyOwner {
+        require(_baseRegisterAmount != 0, "Base register amount can not be zero");
+        baseRegisterAmount = _baseRegisterAmount;
+    }
+
     //return all rewards of a user (in an array of the structurs)
     function userRewards(address _user)
         public
@@ -138,7 +144,7 @@ contract Purchase is Ownable {
         if(_refer != address(0)){
         require(isRegistered[_refer] == true, "Your refer is not registered");
         }
-        require(stableCoinAmount >= 80*10**ERC20(purchaseToken).decimals(), "Minimum register amount is 80$");
+        require(stableCoinAmount >= baseRegisterAmount*10**ERC20(purchaseToken).decimals(), "Your amount is lower than the base register amount");
         uint256 usdcOraclePrice = getOracleUsdcPrice();
         require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
         uint256 purchaseTokenDecimals = ERC20(purchaseToken).decimals();

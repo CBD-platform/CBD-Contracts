@@ -49,11 +49,11 @@ contract CBDTokenTest is Test {
         );
         cbdToken.addDistributor(address(purchaseContract));
 
-        usdc.transfer(add1, 1080e18);
-        usdc.transfer(add2, 1080e18);
-        usdc.transfer(add3, 1080e18);
-        usdc.transfer(add4, 1080e18);
-        usdc.transfer(add5, 1080e18);
+        usdc.transfer(add1, 1050e18);
+        usdc.transfer(add2, 1050e18);
+        usdc.transfer(add3, 1050e18);
+        usdc.transfer(add4, 1050e18);
+        usdc.transfer(add5, 1050e18);
     }
 
     function testOraclePrice() public {
@@ -79,9 +79,9 @@ contract CBDTokenTest is Test {
 
     function testUsdcPriceExpectReverts() public {
         vm.startPrank(add1);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 1000e18);
         oracle.updateAnswer(94e16);
         vm.expectRevert("USDC price is not above 0.95 $");
@@ -91,9 +91,9 @@ contract CBDTokenTest is Test {
     function testBuy() public {
         // buy token add1
         vm.startPrank(add1);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 1000e18);
         purchaseContract.buyToken(1000e18, address(0));
         assertEq(cbdToken.balanceOf(add1), 50e18);
@@ -102,9 +102,9 @@ contract CBDTokenTest is Test {
 
         // buy token add2
         vm.startPrank(add2);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 1000e18);
         purchaseContract.buyToken(1000e18, add1);
         assertEq(cbdToken.balanceOf(add2), 50e18);
@@ -114,9 +114,9 @@ contract CBDTokenTest is Test {
         vm.stopPrank();
         // buy token add3
         vm.startPrank(add3);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 1000e18);
         purchaseContract.buyToken(1000e18, add2);
         assertEq(cbdToken.balanceOf(add3), 50e18);
@@ -128,9 +128,9 @@ contract CBDTokenTest is Test {
         // console.log("time", block.timestamp + 1095 days);
         // buy token add4
         vm.startPrank(add4);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 1000e18);
         purchaseContract.buyToken(1000e18, add3);
         assertEq(cbdToken.balanceOf(add4), 50e18);
@@ -145,9 +145,9 @@ contract CBDTokenTest is Test {
         vm.stopPrank();
         // buy token add5
         vm.startPrank(add5);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 1000e18);
         purchaseContract.buyToken(1000e18, add4);
         assertEq(cbdToken.balanceOf(add5), 50e18);
@@ -214,9 +214,9 @@ contract CBDTokenTest is Test {
     function testPartailPurchaseRewards() public {
         // buy token add1
         vm.startPrank(add1);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 500e18);
         purchaseContract.buyToken(500e18, address(0));
         assertEq(cbdToken.balanceOf(add1), 25e18);
@@ -225,9 +225,9 @@ contract CBDTokenTest is Test {
 
         // buy token add2
         vm.startPrank(add2);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 500e18);
         purchaseContract.buyToken(500e18, add1);
         assertEq(cbdToken.balanceOf(add2), 25e18);
@@ -239,9 +239,9 @@ contract CBDTokenTest is Test {
 
         // buy token add3
         vm.startPrank(add3);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 500e18);
         purchaseContract.buyToken(500e18, add2);
         assertEq(cbdToken.balanceOf(add3), 25e18);
@@ -253,9 +253,9 @@ contract CBDTokenTest is Test {
         // console.log("time", block.timestamp + 1095 days);
         // buy token add4
         vm.startPrank(add4);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 500e18);
         purchaseContract.buyToken(500e18, add3);
         assertEq(cbdToken.balanceOf(add4), 25e18);
@@ -271,9 +271,9 @@ contract CBDTokenTest is Test {
 
         // buy token add5
         vm.startPrank(add5);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 500e18);
         purchaseContract.buyToken(500e18, add4);
         assertEq(cbdToken.balanceOf(add5), 25e18);
@@ -341,9 +341,9 @@ contract CBDTokenTest is Test {
     function testPartailPurchaseRewards2() public {
         // buy token add1
         vm.startPrank(add1);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 250e18);
         purchaseContract.buyToken(250e18, address(0));
         assertEq(cbdToken.balanceOf(add1), 125e17);
@@ -352,9 +352,9 @@ contract CBDTokenTest is Test {
 
         // buy token add2
         vm.startPrank(add2);
-        usdc.approve(address(purchaseContract), 80e18);
-        purchaseContract.register(80e18, address(0));
-        cbdToken.transfer(testReceiver, 4e18);
+        usdc.approve(address(purchaseContract), 50e18);
+        purchaseContract.register(50e18, address(0));
+        cbdToken.transfer(testReceiver, 25e17);
         usdc.approve(address(purchaseContract), 250e18);
         purchaseContract.buyToken(250e18, add1);
         assertEq(cbdToken.balanceOf(add2), 125e17);
