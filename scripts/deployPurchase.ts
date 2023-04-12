@@ -6,13 +6,14 @@ const hre = require("hardhat");
 
 async function main() {
   // goerliCBD = 0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
-  // goerliPurchase = 0xFA6fefD6616b600aC17A5E42403EBE218Ad210E1
+  // goerliPurchase = 0x145d51AbcdD0A56eE5bF5bb2EE6b1970f9Dd32Cd
   const Purchase = await ethers.getContractFactory("Purchase");
   const purchase = await Purchase.deploy(
     process.env.GOERLI_CBD as string,
     process.env.GOERLI_USDC as string,
     `${20*10**18}`,
-    process.env.GOERLI_USDC_ORACLE as string
+    process.env.GOERLI_USDC_ORACLE as string,
+    {gasLimit: 6000000}
   );
 
   await purchase.deployed();

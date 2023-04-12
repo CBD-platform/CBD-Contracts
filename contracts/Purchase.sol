@@ -12,10 +12,19 @@ contract Purchase is Ownable {
     CBDToken public cbdToken;
     address public purchaseToken;
     uint256 public tokenPrice;
-    uint256 public baseRegisterAmount = 50;
+    uint256 public baseRegisterAmount;
     AggregatorV3Interface public priceFeed;
 
     mapping(address => bool) public isRegistered;
+
+    bool onlyAllowedAmountsStatus;
+    mapping(uint => AllowedAmount) public allowedAmounts;
+    
+    
+    struct AllowedAmount {
+        bool isAllowed;
+        uint totalReward;
+    }
 
     struct UserRewards {
         uint256 rewardAmount;
@@ -39,6 +48,14 @@ contract Purchase is Ownable {
         purchaseToken = _purchaseToken;
         tokenPrice = _tokenPrice;
         priceFeed = AggregatorV3Interface(_priceFeed);
+        uint256 purchaseTokenDecimals = ERC20(purchaseToken).decimals();
+        baseRegisterAmount = 50*10**purchaseTokenDecimals;
+        //allowed amounts
+        onlyAllowedAmountsStatus = true;
+        anableAllawanceForAmount(250*10**purchaseTokenDecimals, 500*10**purchaseTokenDecimals);
+        anableAllawanceForAmount(500*10**purchaseTokenDecimals, 1500*10**purchaseTokenDecimals);
+        anableAllawanceForAmount(1000*10**purchaseTokenDecimals, 3000*10**purchaseTokenDecimals);
+        anableAllawanceForAmount(2000*10**purchaseTokenDecimals, 6000*10**purchaseTokenDecimals);
     }
 
     mapping(address => UserRewards[]) public rewards;
@@ -72,6 +89,25 @@ contract Purchase is Ownable {
         );
         purchaseToken = _purchaseToken;
     }
+
+    // enable or disable allowAmounts trading
+    function changeAllowAmountsActivation(bool _status) public onlyOwner {
+        onlyAllowedAmountsStatus = _status;
+    }
+
+    // allow amounts trading
+    function anableAllawanceForAmount(uint _amount, uint _totalRewardByAmount) public onlyOwner {
+        allowedAmounts[_amount].isAllowed = true;
+        allowedAmounts[_amount].totalReward = _totalRewardByAmount;
+    }
+
+    // disAllow amounts trading
+    function disableAllawanceForAmount(uint _amount) public onlyOwner {
+        allowedAmounts[_amount].isAllowed = false;
+        allowedAmounts[_amount].totalReward = 0;
+    }
+
+
 
     //set CBD token
     function setCBDToken(address _CBDToken) public onlyOwner {
@@ -144,77 +180,20 @@ contract Purchase is Ownable {
         if(_refer != address(0)){
         require(isRegistered[_refer] == true, "Your refer is not registered");
         }
-        require(stableCoinAmount >= baseRegisterAmount*10**ERC20(purchaseToken).decimals(), "Your amount is lower than the base register amount");
+        require(stableCoinAmount >= baseRegisterAmount, "Your amount is lower than the base register amount");
         uint256 usdcOraclePrice = getOracleUsdcPrice();
         require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
-        uint256 purchaseTokenDecimals = ERC20(purchaseToken).decimals();
         require(_refer != msg.sender, "You can't put your address as refer");
         require(
             IERC20(purchaseToken).balanceOf(msg.sender) >= stableCoinAmount,
             "You don't have enough stablecoin balance to buy"
         );
-        uint256 quantity = (stableCoinAmount * 1e18) / tokenPrice;
-        uint256 baseQuantity = (1000 * 10**purchaseTokenDecimals * 1e18) /
-            tokenPrice;
-        //perform purchase for user
-        cbdToken.mint(msg.sender, quantity);
         SafeERC20.safeTransferFrom(
             IERC20(purchaseToken),
             msg.sender,
             owner(),
             stableCoinAmount
         );
-        //give refers rewards
-        if (_refer != address(0)) {
-            //set _refer for msg.sender
-            refer[msg.sender] = _refer;
-            // extract refers
-            address refer1 = _refer;
-            address refer2 = refer[refer1];
-            address refer3 = refer[refer2];
-            address refer4 = refer[refer3];
-            // set refer1 rewards
-            if (refer1 != address(0) && cbdToken.balanceOf(refer1) > 0) {
-                cbdToken.mint(refer1, (5e18 * quantity) / baseQuantity);
-                rewards[refer1].push(
-                    UserRewards(
-                        (95e17 * quantity) / baseQuantity,
-                        block.timestamp + 1095 days,
-                        block.timestamp
-                    )
-                );
-            }
-            // set refer2 rewards
-            if (refer2 != address(0) && cbdToken.balanceOf(refer2) > 0) {
-                rewards[refer2].push(
-                    UserRewards(
-                        (75e17 * quantity) / baseQuantity,
-                        block.timestamp + 1095 days,
-                        block.timestamp
-                    )
-                );
-            }
-            // set refer3 rewards
-            if (refer3 != address(0) && cbdToken.balanceOf(refer3) > 0) {
-                rewards[refer3].push(
-                    UserRewards(
-                        (6e18 * quantity) / baseQuantity,
-                        block.timestamp + 1095 days,
-                        block.timestamp
-                    )
-                );
-            }
-            // set refer4 rewards
-            if (refer4 != address(0) && cbdToken.balanceOf(refer4) > 0) {
-                rewards[refer4].push(
-                    UserRewards(
-                        (4e18 * quantity) / baseQuantity,
-                        block.timestamp + 1095 days,
-                        block.timestamp
-                    )
-                );
-            }
-        }
         isRegistered[msg.sender] = true;
     }
 
@@ -241,6 +220,25 @@ contract Purchase is Ownable {
         uint256 quantity = (stableCoinAmount * 1e18) / tokenPrice;
         uint256 baseQuantity = (1000 * 10**purchaseTokenDecimals * 1e18) /
             tokenPrice;
+
+        if(onlyAllowedAmountsStatus == true){
+            require(allowedAmounts[stableCoinAmount].isAllowed, "This stable coin amount is not allowed");
+            uint allQuantityByReward = (allowedAmounts[stableCoinAmount].totalReward * 1e18) / tokenPrice;
+            cbdToken.mint(msg.sender, allQuantityByReward*10/100);
+            SafeERC20.safeTransferFrom(
+                IERC20(purchaseToken),
+                msg.sender,
+                owner(),
+                stableCoinAmount
+            );
+            rewards[msg.sender].push(
+                    UserRewards(
+                        allQuantityByReward*90/100,
+                        block.timestamp + 1095 days,
+                        block.timestamp
+                    )
+                );
+        }else{
         //perform purchase for user
         cbdToken.mint(msg.sender, quantity);
         SafeERC20.safeTransferFrom(
@@ -249,6 +247,7 @@ contract Purchase is Ownable {
             owner(),
             stableCoinAmount
         );
+        }
         //give refers rewards
         if (_refer != address(0)) {
             //set _refer for msg.sender
@@ -331,6 +330,7 @@ contract Purchase is Ownable {
 
     //claim rewards by the user
     function claimRewards() public {
+        uint tokenAmountToMint;
         for (uint256 i = 0; i < rewards[msg.sender].length; i++) {
             if (rewards[msg.sender][i].rewardAmount > 0) {
                 if (block.timestamp < rewards[msg.sender][i].endTime) {
@@ -345,16 +345,20 @@ contract Purchase is Ownable {
                     if (rewards[msg.sender][i].rewardAmount == 0) {
                         _deleteRewardObject(msg.sender, i);
                     }
-                    cbdToken.mint(msg.sender, unClaimedAmount);
+                    tokenAmountToMint += unClaimedAmount;
+                    // cbdToken.mint(msg.sender, unClaimedAmount);
                 } else {
                     uint256 unClaimedAmount = rewards[msg.sender][i]
                         .rewardAmount;
                     rewards[msg.sender][i].rewardAmount = 0;
                     rewards[msg.sender][i].lastUpdateTime = block.timestamp;
-                    cbdToken.mint(msg.sender, unClaimedAmount);
+                    tokenAmountToMint += unClaimedAmount;
+                    // cbdToken.mint(msg.sender, unClaimedAmount);
                 }
             }
         }
+
+        cbdToken.mint(msg.sender, tokenAmountToMint);
 
         for (uint256 i = 0; i < rewards[msg.sender].length; i++) {
             if (rewards[msg.sender][i].rewardAmount == 0) {

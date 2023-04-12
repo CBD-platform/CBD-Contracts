@@ -24,6 +24,10 @@ const config: HardhatUserConfig = {
       url: process.env.GOERLY_URL,
       accounts:[process.env.PRIVATE_KEY as string] 
   },
+    sepolia: {
+      url: process.env.SEPOLIA_URL,
+      accounts:[process.env.PRIVATE_KEY as string] 
+  },
   binance: {
     url: process.env.BINANCE_TESTNET_RPC,
     accounts:[process.env.PRIVATE_KEY as string] 
