@@ -6,10 +6,22 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers:[
       {
-        version:"0.8.0"
+        version:"0.8.0",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
       },
       {
-        version:"0.8.17"
+        version:"0.8.17",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
       },
     ]
   },
@@ -32,11 +44,16 @@ const config: HardhatUserConfig = {
     url: process.env.BINANCE_TESTNET_RPC,
     accounts:[process.env.PRIVATE_KEY as string] 
 },
+  polygon: {
+    url: process.env.POLYGON_URL,
+    accounts:[process.env.PRIVATE_KEY as string] 
+},
 },
 etherscan: {
   // Your API key for Etherscan
   // Obtain one at https://etherscan.io/
   apiKey: process.env.ETHERSCAN_KEY
+  // apiKey: process.env.POLYGONSCAN_KEY
   // apiKey: process.env.BSCSCAN_KEY
 },
 };

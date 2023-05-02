@@ -13,8 +13,8 @@
   },
   "files": {
     "contracts/CBDToken.sol": {
-      "lastModificationDate": 1674558515927,
-      "contentHash": "e21c0c94ae22d8beeb993fe1af80082d",
+      "lastModificationDate": 1681848410060,
+      "contentHash": "dcd9e9fa28e3a02c979c67c8755fd828",
       "sourceName": "contracts/CBDToken.sol",
       "solcConfig": {
         "settings": {
@@ -60,8 +60,8 @@
       }
     },
     "contracts/Purchase.sol": {
-      "lastModificationDate": 1681340930905,
-      "contentHash": "8c6aa4e53c4e5354e4aef1383f7e9329",
+      "lastModificationDate": 1683047671269,
+      "contentHash": "b19d0fcc006661d2e8906808c47f8231",
       "sourceName": "contracts/Purchase.sol",
       "solcConfig": {
         "settings": {
@@ -157,8 +157,8 @@
       }
     },
     "contracts/test/Token.sol": {
-      "lastModificationDate": 1670893655064,
-      "contentHash": "c6ec661d1070d7058cb5f11e1f69780d",
+      "lastModificationDate": 1681850617254,
+      "contentHash": "065201b0276c67e885aaf3bebf9fda2a",
       "sourceName": "contracts/test/Token.sol",
       "solcConfig": {
         "settings": {
@@ -1416,8 +1416,8 @@
       }
     },
     "test/foundry/CBDToken.t.sol": {
-      "lastModificationDate": 1681336966146,
-      "contentHash": "b3e63c625bcd134f7bc08e7a673c682f",
+      "lastModificationDate": 1683049691105,
+      "contentHash": "eb1ac690d93c376f207ef5f6ac70ed6c",
       "sourceName": "test/foundry/CBDToken.t.sol",
       "solcConfig": {
         "settings": {
@@ -1489,8 +1489,8 @@
       }
     },
     "test/foundry/Oracle.t.sol": {
-      "lastModificationDate": 1674558030310,
-      "contentHash": "27ebcd8b1874fd82f31c4058223ab0e1",
+      "lastModificationDate": 1681850736218,
+      "contentHash": "f517fe1fb138ec6bbf74ebb4a49a888f",
       "sourceName": "test/foundry/Oracle.t.sol",
       "solcConfig": {
         "settings": {
@@ -1558,6 +1558,79 @@
       "artifacts": {
         "CBDTokenTest": {
           "0.8.17+commit.8df45f5f.Windows.msvc": "Oracle.t.sol\\CBDTokenTest.json"
+        }
+      }
+    },
+    "test/foundry/Purchase.t.sol": {
+      "lastModificationDate": 1681851069577,
+      "contentHash": "41d86fe3c67a456ab70eaacea1c4426f",
+      "sourceName": "test/foundry/Purchase.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "contracts\\CBDToken.sol",
+        "contracts\\Purchase.sol",
+        "contracts\\test\\MockV3Aggregator.sol",
+        "contracts\\test\\Token.sol",
+        "lib/forge-std/lib/ds-test/src\\test.sol",
+        "lib/forge-std/src/Common.sol",
+        "lib/forge-std/src/Components.sol",
+        "lib/forge-std/src/StdAssertions.sol",
+        "lib/forge-std/src/StdChains.sol",
+        "lib/forge-std/src/StdCheats.sol",
+        "lib/forge-std/src/StdError.sol",
+        "lib/forge-std/src/StdJson.sol",
+        "lib/forge-std/src/StdMath.sol",
+        "lib/forge-std/src/StdStorage.sol",
+        "lib/forge-std/src/StdUtils.sol",
+        "lib/forge-std/src\\Test.sol",
+        "lib/forge-std/src/Vm.sol",
+        "lib/forge-std/src/console.sol",
+        "lib/forge-std/src/console2.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorInterface.sol",
+        "node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorV2V3Interface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
+        "node_modules/@chainlink\\contracts/src/v0.8/tests/MockV3Aggregator.sol",
+        "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/extensions/ERC20Burnable.sol",
+        "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+        "node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/utils/SafeERC20.sol",
+        "node_modules/@openzeppelin/contracts/utils/Address.sol",
+        "node_modules/@openzeppelin/contracts/utils/Context.sol"
+      ],
+      "versionRequirement": "^0.8.13",
+      "artifacts": {
+        "PurchaseTest": {
+          "0.8.17+commit.8df45f5f.Windows.msvc": "Purchase.t.sol\\PurchaseTest.json"
         }
       }
     }

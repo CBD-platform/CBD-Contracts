@@ -4,16 +4,18 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./CBDToken.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-contract Purchase is Ownable {
+contract Purchase {
     CBDToken public cbdToken;
     address public purchaseToken;
     uint256 public tokenPrice;
     uint256 public baseRegisterAmount;
     AggregatorV3Interface public priceFeed;
+
+    address public admin;
+    mapping(address => bool) public owners; //is given address owner 
 
     mapping(address => bool) public isRegistered;
 
@@ -27,6 +29,7 @@ contract Purchase is Ownable {
     }
 
     struct UserRewards {
+        uint256 totalRewardAmount;
         uint256 rewardAmount;
         uint256 endTime;
         uint256 lastUpdateTime;
@@ -50,6 +53,9 @@ contract Purchase is Ownable {
         priceFeed = AggregatorV3Interface(_priceFeed);
         uint256 purchaseTokenDecimals = ERC20(purchaseToken).decimals();
         baseRegisterAmount = 50*10**purchaseTokenDecimals;
+        //set owner and admin
+        owners[msg.sender] = true;
+        admin = msg.sender;
         //allowed amounts
         onlyAllowedAmountsStatus = true;
         anableAllawanceForAmount(250*10**purchaseTokenDecimals, 500*10**purchaseTokenDecimals);
@@ -58,8 +64,51 @@ contract Purchase is Ownable {
         anableAllawanceForAmount(2000*10**purchaseTokenDecimals, 6000*10**purchaseTokenDecimals);
     }
 
-    mapping(address => UserRewards[]) public rewards;
+    
+    mapping(address => UserRewards[]) public purchaseRewards;
+    mapping(address => UserRewards[]) public referRewards;
     mapping(address => address) public refer;
+    //history
+    mapping(address => uint) public instantReferRewardHistory;
+
+
+    function isOwner(address _user) public view returns(bool){
+        return owners[_user];
+    } 
+
+
+    /**
+    * @dev Throws if called by any account other than the owner.
+    */
+    modifier onlyOwners() {
+        _checkOwners();
+        _;
+    }
+    
+    
+    // Check msg.sender should be owner
+    function _checkOwners() internal view virtual {
+        require(owners[msg.sender], "Ownable_Distributor: caller is not from the owners");
+    }
+    
+
+    function transferUserOwnership(address _newOwner) public onlyOwners{
+        owners[msg.sender] = false;
+        owners[_newOwner] = true;
+    }
+
+    function addOwner(address _newOwner) public onlyOwners{
+        owners[_newOwner] = true;
+    }
+
+    function removeOwner(address _newOwner) public onlyOwners{
+        owners[_newOwner] = false;
+    }
+
+    function changeAdmin(address _newAdmin) public onlyOwners{
+        admin = _newAdmin;
+    }
+
 
     function scalePrice(
         int256 _price,
@@ -82,7 +131,7 @@ contract Purchase is Ownable {
     }
 
     //set purchase token
-    function setPurchaseToken(address _purchaseToken) public onlyOwner {
+    function setPurchaseToken(address _purchaseToken) public onlyOwners {
         require(
             _purchaseToken != address(0),
             "Purchase token can not be zero address"
@@ -91,18 +140,18 @@ contract Purchase is Ownable {
     }
 
     // enable or disable allowAmounts trading
-    function changeAllowAmountsActivation(bool _status) public onlyOwner {
+    function changeAllowAmountsActivation(bool _status) public onlyOwners {
         onlyAllowedAmountsStatus = _status;
     }
 
     // allow amounts trading
-    function anableAllawanceForAmount(uint _amount, uint _totalRewardByAmount) public onlyOwner {
+    function anableAllawanceForAmount(uint _amount, uint _totalRewardByAmount) public onlyOwners {
         allowedAmounts[_amount].isAllowed = true;
         allowedAmounts[_amount].totalReward = _totalRewardByAmount;
     }
 
     // disAllow amounts trading
-    function disableAllawanceForAmount(uint _amount) public onlyOwner {
+    function disableAllawanceForAmount(uint _amount) public onlyOwners {
         allowedAmounts[_amount].isAllowed = false;
         allowedAmounts[_amount].totalReward = 0;
     }
@@ -110,50 +159,144 @@ contract Purchase is Ownable {
 
 
     //set CBD token
-    function setCBDToken(address _CBDToken) public onlyOwner {
+    function setCBDToken(address _CBDToken) public onlyOwners {
         require(_CBDToken != address(0), "CBD token can not be zero address");
         cbdToken = CBDToken(_CBDToken);
     }
 
-    function setBaseRegisterAmount(uint256 _baseRegisterAmount) public onlyOwner {
+    function setBaseRegisterAmount(uint256 _baseRegisterAmount) public onlyOwners {
         require(_baseRegisterAmount != 0, "Base register amount can not be zero");
         baseRegisterAmount = _baseRegisterAmount;
     }
 
-    //return all rewards of a user (in an array of the structurs)
-    function userRewards(address _user)
+    //return all purchse rewards of a user (in an array of the structurs)
+    function userPurchaseRewards(address _user)
         public
         view
         returns (UserRewards[] memory)
     {
-        return rewards[_user];
+        return purchaseRewards[_user];
     }
 
-    //return all reward amounts of a user
-    function allRewardAmounts(address _user) public view returns (uint256) {
+    //return all purchse rewards of a user (in an array of the structurs)
+    function userReferRewards(address _user)
+        public
+        view
+        returns (UserRewards[] memory)
+    {
+        return referRewards[_user];
+    }
+
+    //return all purchase reward amounts of a user
+    function allPurchaseRewardAmounts(address _user) public view returns (uint256) {
         uint256 allRewards = 0;
-        for (uint256 i = 0; i < rewards[_user].length; i++) {
-            if (rewards[_user][i].rewardAmount > 0) {
-                allRewards += rewards[_user][i].rewardAmount;
+        for (uint256 i = 0; i < purchaseRewards[_user].length; i++) {
+            if (purchaseRewards[_user][i].rewardAmount > 0) {
+                allRewards += purchaseRewards[_user][i].rewardAmount;
             }
         }
         return allRewards;
     }
 
+
+    //return all refer reward amounts of a user
+    function allReferRewardAmounts(address _user) public view returns (uint256) {
+        uint256 allRewards = 0;
+        for (uint256 i = 0; i < referRewards[_user].length; i++) {
+            if (referRewards[_user][i].rewardAmount > 0) {
+                allRewards += referRewards[_user][i].rewardAmount;
+            }
+        }
+        return allRewards;
+    }
+
+    //return all reward amounts of a user (purchase rewards + refer rewards)
+    function allRewardAmounts(address _user) public view returns (uint256) {
+        uint256 allRewards = 0;
+        for (uint256 i = 0; i < purchaseRewards[_user].length; i++) {
+            if (purchaseRewards[_user][i].rewardAmount > 0) {
+                allRewards += purchaseRewards[_user][i].rewardAmount;
+            }
+        }
+        for (uint256 i = 0; i < referRewards[_user].length; i++) {
+            if (referRewards[_user][i].rewardAmount > 0) {
+                allRewards += referRewards[_user][i].rewardAmount;
+            }
+        }
+        return allRewards;
+    }
+
+
+    //return all purchase reward amounts of a user
+    function allPurchaseTotalRewardAmounts(address _user) public view returns (uint256) {
+        uint256 allTotalRewards = 0;
+        for (uint256 i = 0; i < purchaseRewards[_user].length; i++) {
+            if (purchaseRewards[_user][i].totalRewardAmount > 0) {
+                allTotalRewards += purchaseRewards[_user][i].totalRewardAmount;
+            }
+        }
+        return allTotalRewards;
+    }
+
+
+    //return all refer reward amounts of a user
+    function allReferTotalRewardAmounts(address _user) public view returns (uint256) {
+        uint256 allTotalRewards = 0;
+        for (uint256 i = 0; i < referRewards[_user].length; i++) {
+            if (referRewards[_user][i].totalRewardAmount > 0) {
+                allTotalRewards += referRewards[_user][i].totalRewardAmount;
+            }
+        }
+        return allTotalRewards;
+    }
+
+    //return all reward amounts of a user (purchase rewards + refer rewards)
+    function allTotalRewardAmounts(address _user) public view returns (uint256) {
+        uint256 allTotalRewards = 0;
+        for (uint256 i = 0; i < purchaseRewards[_user].length; i++) {
+            if (purchaseRewards[_user][i].totalRewardAmount > 0) {
+                allTotalRewards += purchaseRewards[_user][i].totalRewardAmount;
+            }
+        }
+        for (uint256 i = 0; i < referRewards[_user].length; i++) {
+            if (referRewards[_user][i].totalRewardAmount > 0) {
+                allTotalRewards += referRewards[_user][i].totalRewardAmount;
+            }
+        }
+        return allTotalRewards;
+    }
+
     function getUnclaimedRewards(address _user) public view returns (uint256) {
         uint256 unClaimedRewards = 0;
-        for (uint256 i = 0; i < rewards[_user].length; i++) {
-            if (rewards[_user][i].rewardAmount > 0) {
-                if (block.timestamp < rewards[_user][i].endTime) {
-                    uint256 allRemainPeriod = rewards[_user][i].endTime -
-                        rewards[_user][i].lastUpdateTime;
+        //for purchase rewards
+        for (uint256 i = 0; i < purchaseRewards[_user].length; i++) {
+            if (purchaseRewards[_user][i].rewardAmount > 0) {
+                if (block.timestamp < purchaseRewards[_user][i].endTime) {
+                    uint256 allRemainPeriod = purchaseRewards[_user][i].endTime -
+                        purchaseRewards[_user][i].lastUpdateTime;
                     uint256 unClaimedPeriod = block.timestamp -
-                        rewards[_user][i].lastUpdateTime;
-                    uint256 unClaimedAmount = (rewards[_user][i].rewardAmount *
+                        purchaseRewards[_user][i].lastUpdateTime;
+                    uint256 unClaimedAmount = (purchaseRewards[_user][i].rewardAmount *
                         unClaimedPeriod) / allRemainPeriod;
                     unClaimedRewards += unClaimedAmount;
                 } else {
-                    unClaimedRewards += rewards[_user][i].rewardAmount;
+                    unClaimedRewards += purchaseRewards[_user][i].rewardAmount;
+                }
+            }
+        }
+        //for refer rewards
+        for (uint256 i = 0; i < referRewards[_user].length; i++) {
+            if (referRewards[_user][i].rewardAmount > 0) {
+                if (block.timestamp < referRewards[_user][i].endTime) {
+                    uint256 allRemainPeriod = referRewards[_user][i].endTime -
+                        referRewards[_user][i].lastUpdateTime;
+                    uint256 unClaimedPeriod = block.timestamp -
+                        referRewards[_user][i].lastUpdateTime;
+                    uint256 unClaimedAmount = (referRewards[_user][i].rewardAmount *
+                        unClaimedPeriod) / allRemainPeriod;
+                    unClaimedRewards += unClaimedAmount;
+                } else {
+                    unClaimedRewards += referRewards[_user][i].rewardAmount;
                 }
             }
         }
@@ -165,7 +308,7 @@ contract Purchase is Ownable {
     @param _newTokenPrice should be on format of purchase token price (18 decimal or other)
     @notice usdc on polygon has 6 decimals so price should has 6 decimals
      */
-    function setTokenPrice(uint256 _newTokenPrice) public onlyOwner {
+    function setTokenPrice(uint256 _newTokenPrice) public onlyOwners {
         tokenPrice = _newTokenPrice;
     }
 
@@ -191,10 +334,13 @@ contract Purchase is Ownable {
         SafeERC20.safeTransferFrom(
             IERC20(purchaseToken),
             msg.sender,
-            owner(),
+            admin,
             stableCoinAmount
         );
         isRegistered[msg.sender] = true;
+        if(_refer != address(0)){
+            refer[msg.sender] = _refer;
+        }
     }
 
     /**
@@ -228,11 +374,12 @@ contract Purchase is Ownable {
             SafeERC20.safeTransferFrom(
                 IERC20(purchaseToken),
                 msg.sender,
-                owner(),
+                admin,
                 stableCoinAmount
             );
-            rewards[msg.sender].push(
+            purchaseRewards[msg.sender].push(
                     UserRewards(
+                        allQuantityByReward*90/100,
                         allQuantityByReward*90/100,
                         block.timestamp + 1095 days,
                         block.timestamp
@@ -244,7 +391,7 @@ contract Purchase is Ownable {
         SafeERC20.safeTransferFrom(
             IERC20(purchaseToken),
             msg.sender,
-            owner(),
+            admin,
             stableCoinAmount
         );
         }
@@ -260,8 +407,10 @@ contract Purchase is Ownable {
             // set refer1 rewards
             if (refer1 != address(0) && cbdToken.balanceOf(refer1) > 0) {
                 cbdToken.mint(refer1, (5e18 * quantity) / baseQuantity);
-                rewards[refer1].push(
+                instantReferRewardHistory[refer1] += ((5e18 * quantity) / baseQuantity);
+                referRewards[refer1].push(
                     UserRewards(
+                        (95e17 * quantity) / baseQuantity,
                         (95e17 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
@@ -270,8 +419,9 @@ contract Purchase is Ownable {
             }
             // set refer2 rewards
             if (refer2 != address(0) && cbdToken.balanceOf(refer2) > 0) {
-                rewards[refer2].push(
+                referRewards[refer2].push(
                     UserRewards(
+                        (75e17 * quantity) / baseQuantity,
                         (75e17 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
@@ -280,8 +430,9 @@ contract Purchase is Ownable {
             }
             // set refer3 rewards
             if (refer3 != address(0) && cbdToken.balanceOf(refer3) > 0) {
-                rewards[refer3].push(
+                referRewards[refer3].push(
                     UserRewards(
+                        (6e18 * quantity) / baseQuantity,
                         (6e18 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
@@ -290,8 +441,9 @@ contract Purchase is Ownable {
             }
             // set refer4 rewards
             if (refer4 != address(0) && cbdToken.balanceOf(refer4) > 0) {
-                rewards[refer4].push(
+                referRewards[refer4].push(
                     UserRewards(
+                        (4e18 * quantity) / baseQuantity,
                         (4e18 * quantity) / baseQuantity,
                         block.timestamp + 1095 days,
                         block.timestamp
@@ -315,54 +467,174 @@ contract Purchase is Ownable {
         SafeERC20.safeTransferFrom(
             IERC20(purchaseToken),
             msg.sender,
-            owner(),
+            admin,
             stableCoinAmount
         );
     }
 
-    function _deleteRewardObject(address _user, uint256 _rewardIndex) internal {
-        for (uint256 i = _rewardIndex; i < rewards[_user].length - 1; i++) {
-            rewards[_user][i] = rewards[_user][i + 1];
+    function _deletePurchaseRewardObject(address _user, uint256 _rewardIndex) internal {
+        for (uint256 i = _rewardIndex; i < purchaseRewards[_user].length - 1; i++) {
+            purchaseRewards[_user][i] = purchaseRewards[_user][i + 1];
         }
-        delete rewards[_user][rewards[_user].length - 1];
-        rewards[_user].pop();
+        delete purchaseRewards[_user][purchaseRewards[_user].length - 1];
+        purchaseRewards[_user].pop();
+    }
+
+
+    function _deleteReferRewardObject(address _user, uint256 _rewardIndex) internal {
+        for (uint256 i = _rewardIndex; i < referRewards[_user].length - 1; i++) {
+            referRewards[_user][i] = referRewards[_user][i + 1];
+        }
+        delete referRewards[_user][referRewards[_user].length - 1];
+        referRewards[_user].pop();
     }
 
     //claim rewards by the user
     function claimRewards() public {
         uint tokenAmountToMint;
-        for (uint256 i = 0; i < rewards[msg.sender].length; i++) {
-            if (rewards[msg.sender][i].rewardAmount > 0) {
-                if (block.timestamp < rewards[msg.sender][i].endTime) {
-                    uint256 allRemainPeriod = rewards[msg.sender][i].endTime -
-                        rewards[msg.sender][i].lastUpdateTime;
+        // calculate purchase rewards
+        for (uint256 i = 0; i < purchaseRewards[msg.sender].length; i++) {
+            if (purchaseRewards[msg.sender][i].rewardAmount > 0) {
+                if (block.timestamp < purchaseRewards[msg.sender][i].endTime) {
+                    uint256 allRemainPeriod = purchaseRewards[msg.sender][i].endTime -
+                        purchaseRewards[msg.sender][i].lastUpdateTime;
                     uint256 unClaimedPeriod = block.timestamp -
-                        rewards[msg.sender][i].lastUpdateTime;
-                    uint256 unClaimedAmount = (rewards[msg.sender][i]
+                        purchaseRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedAmount = (purchaseRewards[msg.sender][i]
                         .rewardAmount * unClaimedPeriod) / allRemainPeriod;
-                    rewards[msg.sender][i].rewardAmount -= unClaimedAmount;
-                    rewards[msg.sender][i].lastUpdateTime = block.timestamp;
-                    if (rewards[msg.sender][i].rewardAmount == 0) {
-                        _deleteRewardObject(msg.sender, i);
+                    purchaseRewards[msg.sender][i].rewardAmount -= unClaimedAmount;
+                    purchaseRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    if (purchaseRewards[msg.sender][i].rewardAmount == 0) {
+                        _deletePurchaseRewardObject(msg.sender, i);
                     }
                     tokenAmountToMint += unClaimedAmount;
-                    // cbdToken.mint(msg.sender, unClaimedAmount);
                 } else {
-                    uint256 unClaimedAmount = rewards[msg.sender][i]
+                    uint256 unClaimedAmount = purchaseRewards[msg.sender][i]
                         .rewardAmount;
-                    rewards[msg.sender][i].rewardAmount = 0;
-                    rewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    purchaseRewards[msg.sender][i].rewardAmount = 0;
+                    purchaseRewards[msg.sender][i].lastUpdateTime = block.timestamp;
                     tokenAmountToMint += unClaimedAmount;
-                    // cbdToken.mint(msg.sender, unClaimedAmount);
                 }
             }
         }
-
+        // calculate refer rewards
+        for (uint256 i = 0; i < referRewards[msg.sender].length; i++) {
+            if (referRewards[msg.sender][i].rewardAmount > 0) {
+                if (block.timestamp < referRewards[msg.sender][i].endTime) {
+                    uint256 allRemainPeriod = referRewards[msg.sender][i].endTime -
+                        referRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedPeriod = block.timestamp -
+                        referRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedAmount = (referRewards[msg.sender][i]
+                        .rewardAmount * unClaimedPeriod) / allRemainPeriod;
+                    referRewards[msg.sender][i].rewardAmount -= unClaimedAmount;
+                    referRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    if (referRewards[msg.sender][i].rewardAmount == 0) {
+                        _deleteReferRewardObject(msg.sender, i);
+                    }
+                    tokenAmountToMint += unClaimedAmount;
+                } else {
+                    uint256 unClaimedAmount = referRewards[msg.sender][i]
+                        .rewardAmount;
+                    referRewards[msg.sender][i].rewardAmount = 0;
+                    referRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    tokenAmountToMint += unClaimedAmount;
+                }
+            }
+        }
         cbdToken.mint(msg.sender, tokenAmountToMint);
 
-        for (uint256 i = 0; i < rewards[msg.sender].length; i++) {
-            if (rewards[msg.sender][i].rewardAmount == 0) {
-                _deleteRewardObject(msg.sender, i);
+        //delet zero purchase object
+        for (uint256 i = 0; i < purchaseRewards[msg.sender].length; i++) {
+            if (purchaseRewards[msg.sender][i].rewardAmount == 0) {
+                _deletePurchaseRewardObject(msg.sender, i);
+            }
+        }
+        //delet zero refer object
+        for (uint256 i = 0; i < referRewards[msg.sender].length; i++) {
+            if (referRewards[msg.sender][i].rewardAmount == 0) {
+                _deleteReferRewardObject(msg.sender, i);
+            }
+        }
+    }
+
+
+
+    //claim only purchase rewards by the user
+    function claimPurchaseRewards() public {
+        uint tokenAmountToMint;
+        // calculate purchase rewards
+        for (uint256 i = 0; i < purchaseRewards[msg.sender].length; i++) {
+            if (purchaseRewards[msg.sender][i].rewardAmount > 0) {
+                if (block.timestamp < purchaseRewards[msg.sender][i].endTime) {
+                    uint256 allRemainPeriod = purchaseRewards[msg.sender][i].endTime -
+                        purchaseRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedPeriod = block.timestamp -
+                        purchaseRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedAmount = (purchaseRewards[msg.sender][i]
+                        .rewardAmount * unClaimedPeriod) / allRemainPeriod;
+                    purchaseRewards[msg.sender][i].rewardAmount -= unClaimedAmount;
+                    purchaseRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    if (purchaseRewards[msg.sender][i].rewardAmount == 0) {
+                        _deletePurchaseRewardObject(msg.sender, i);
+                    }
+                    tokenAmountToMint += unClaimedAmount;
+                } else {
+                    uint256 unClaimedAmount = purchaseRewards[msg.sender][i]
+                        .rewardAmount;
+                    purchaseRewards[msg.sender][i].rewardAmount = 0;
+                    purchaseRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    tokenAmountToMint += unClaimedAmount;
+                }
+            }
+        }
+        
+        cbdToken.mint(msg.sender, tokenAmountToMint);
+
+        //delet zero purchase object
+        for (uint256 i = 0; i < purchaseRewards[msg.sender].length; i++) {
+            if (purchaseRewards[msg.sender][i].rewardAmount == 0) {
+                _deletePurchaseRewardObject(msg.sender, i);
+            }
+        }
+    }
+
+
+    //claim refer rewards by the user
+    function claimReferRewards() public {
+        uint tokenAmountToMint;
+        
+        // calculate refer rewards
+        for (uint256 i = 0; i < referRewards[msg.sender].length; i++) {
+            if (referRewards[msg.sender][i].rewardAmount > 0) {
+                if (block.timestamp < referRewards[msg.sender][i].endTime) {
+                    uint256 allRemainPeriod = referRewards[msg.sender][i].endTime -
+                        referRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedPeriod = block.timestamp -
+                        referRewards[msg.sender][i].lastUpdateTime;
+                    uint256 unClaimedAmount = (referRewards[msg.sender][i]
+                        .rewardAmount * unClaimedPeriod) / allRemainPeriod;
+                    referRewards[msg.sender][i].rewardAmount -= unClaimedAmount;
+                    referRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    if (referRewards[msg.sender][i].rewardAmount == 0) {
+                        _deleteReferRewardObject(msg.sender, i);
+                    }
+                    tokenAmountToMint += unClaimedAmount;
+                } else {
+                    uint256 unClaimedAmount = referRewards[msg.sender][i]
+                        .rewardAmount;
+                    referRewards[msg.sender][i].rewardAmount = 0;
+                    referRewards[msg.sender][i].lastUpdateTime = block.timestamp;
+                    tokenAmountToMint += unClaimedAmount;
+                }
+            }
+        }
+        cbdToken.mint(msg.sender, tokenAmountToMint);
+
+        //delet zero refer object
+        for (uint256 i = 0; i < referRewards[msg.sender].length; i++) {
+            if (referRewards[msg.sender][i].rewardAmount == 0) {
+                _deleteReferRewardObject(msg.sender, i);
             }
         }
     }

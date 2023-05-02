@@ -34,6 +34,7 @@ contract CBDTokenTest is Test {
         link = new Token(
             "Link Token",
             "LINK",
+            18,
             1000000e18
         );
         

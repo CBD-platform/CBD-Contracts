@@ -5,14 +5,14 @@ const hre = require("hardhat");
 
 
 async function main() {
-  // goerliCBD = 0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
-  // goerliPurchase = 0x74bfF3943fCdCf2f7B5a0BE740e444F1cC257C16
+  // polygonCBD = 0xd2Ad443CfdD184A503c9d911CcF98d4387BC7cC2
+  // polygonPurchase = 0xe786a2C55E12675818b2DD5a92E8d8f2F5A0bb42
   const Purchase = await ethers.getContractFactory("Purchase");
   const purchase = await Purchase.deploy(
-    process.env.GOERLI_CBD as string,
-    process.env.GOERLI_USDC as string,
-    `${20*10**18}`,
-    process.env.GOERLI_USDC_ORACLE as string,
+    process.env.POLYGON_CBD as string,
+    process.env.POLYGON_USDC as string,
+    `${20*10**6}`,
+    process.env.POLYGON_USDC_ORACLE as string,
     {gasLimit: 6000000}
   );
 
