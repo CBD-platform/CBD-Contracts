@@ -6,7 +6,7 @@ const hre = require("hardhat");
 
 async function main() {
   // polygonCBD = 0xd2Ad443CfdD184A503c9d911CcF98d4387BC7cC2
-  // polygonPurchase = 0xe786a2C55E12675818b2DD5a92E8d8f2F5A0bb42
+  // polygonPurchase = 0x3cE24E62dC7b2C25616bF0D584a0DBeEB24EA983
   const Purchase = await ethers.getContractFactory("Purchase");
   const purchase = await Purchase.deploy(
     process.env.POLYGON_CBD as string,
