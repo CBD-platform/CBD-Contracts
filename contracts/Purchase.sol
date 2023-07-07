@@ -348,9 +348,12 @@ contract Purchase {
             stableCoinAmount
         );
         isRegistered[msg.sender] = true;
-        if(_refer != address(0)){
-            refer[msg.sender] = _refer;
-        }
+        if(refer[msg.sender] == address(0) && _refer != address(0)){
+                // store msg.sender as refferedPeople for refer
+                referredPeople[_refer].push(msg.sender);
+                //set _refer for msg.sender
+                refer[msg.sender] = _refer;
+            }
     }
 
     /**

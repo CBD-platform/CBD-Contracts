@@ -6,7 +6,7 @@ const hre = require("hardhat");
 
 async function main() {
   // goerliCBD = 0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
-  // goerliPurchase = 0x74bfF3943fCdCf2f7B5a0BE740e444F1cC257C16
+  // goerliPurchase = 0xfBFdB30a8b5b6C348F80802631e5FF39dF00b445
   const Purchase = await ethers.getContractFactory("Purchase");
   const purchase = await Purchase.deploy(
     process.env.GOERLI_CBD as string,

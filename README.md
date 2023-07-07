@@ -8,13 +8,13 @@ goerli-CBD:
 https://goerli.etherscan.io/address/0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
 
 goerli-purchase:
-https://goerli.etherscan.io/address/0x484AB479E7ae5Cd464C24846950974574A74cb50#readContract
+https://goerli.etherscan.io/address/0xfBFdB30a8b5b6C348F80802631e5FF39dF00b445#readContract
 
 polygon-CBD:
 https://polygonscan.com/address/0xd2Ad443CfdD184A503c9d911CcF98d4387BC7cC2#readContract
 
 polygon-purchase:
-https://polygonscan.com/address/0x3cE24E62dC7b2C25616bF0D584a0DBeEB24EA983#writeContract
+https://polygonscan.com/address/0xf610aEFbF927dC2c9e46987fd125045f2A2bA013#writeContract
 
 ```shell
 npx hardhat help
