@@ -68,6 +68,7 @@ contract Purchase {
     mapping(address => UserRewards[]) public purchaseRewards;
     mapping(address => UserRewards[]) public referRewards;
     mapping(address => address) public refer;
+    mapping(address => address[]) public referredPeople;
     //history
     mapping(address => uint) public instantReferRewardHistory;
 
@@ -167,6 +168,15 @@ contract Purchase {
     function setBaseRegisterAmount(uint256 _baseRegisterAmount) public onlyOwners {
         require(_baseRegisterAmount != 0, "Base register amount can not be zero");
         baseRegisterAmount = _baseRegisterAmount;
+    }
+
+    // referredPeople
+    function userReferredPeople(address _user)
+        public
+        view
+        returns (address[] memory)
+    {
+        return referredPeople[_user];
     }
 
     //return all purchse rewards of a user (in an array of the structurs)
@@ -395,12 +405,17 @@ contract Purchase {
             stableCoinAmount
         );
         }
+
         //give refers rewards
         if (_refer != address(0)) {
-            //set _refer for msg.sender
-            refer[msg.sender] = _refer;
+            if(refer[msg.sender] == address(0)){
+                // store msg.sender as refferedPeople for refer
+                referredPeople[_refer].push(msg.sender);
+                //set _refer for msg.sender
+                refer[msg.sender] = _refer;
+            }
             // extract refers
-            address refer1 = _refer;
+            address refer1 = refer[msg.sender];
             address refer2 = refer[refer1];
             address refer3 = refer[refer2];
             address refer4 = refer[refer3];

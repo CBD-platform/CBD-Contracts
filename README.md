@@ -8,7 +8,7 @@ goerli-CBD:
 https://goerli.etherscan.io/address/0x6e8eCf88F39E08e06764Ff26d67c1ed99f8ea1CE
 
 goerli-purchase:
-https://goerli.etherscan.io/address/0x74bfF3943fCdCf2f7B5a0BE740e444F1cC257C16#readContract
+https://goerli.etherscan.io/address/0x484AB479E7ae5Cd464C24846950974574A74cb50#readContract
 
 polygon-CBD:
 https://polygonscan.com/address/0xd2Ad443CfdD184A503c9d911CcF98d4387BC7cC2#readContract

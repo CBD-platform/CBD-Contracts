@@ -209,6 +209,120 @@ contract PurchaseTest is Test {
         );
     }
 
+    function testReferedPeople() public{
+        uint initialReward = (1000e18*3*90)/100/20;
+        // buy token add1
+        vm.startPrank(add1);
+        usdc.approve(address(purchaseContract), 50e6);
+        purchaseContract.register(50e6, address(0));
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, address(0));
+        assertEq(cbdToken.balanceOf(add1), 15e18);
+        assertEq(usdc.balanceOf(add1), 0);
+        vm.stopPrank();
+        // buy token add2
+        vm.startPrank(add2);
+        usdc.approve(address(purchaseContract), 50e6);
+        purchaseContract.register(50e6, address(0));
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, add1);
+        assertEq(cbdToken.balanceOf(add2), 15e18);
+        assertEq(usdc.balanceOf(add2), 0);
+        assertEq(cbdToken.balanceOf(add1), 20e18);
+        assertEq(purchaseContract.allRewardAmounts(add1), initialReward + reward1);
+        vm.stopPrank();
+
+        // buy token add3
+        vm.startPrank(add3);
+        usdc.approve(address(purchaseContract), 50e6);
+        purchaseContract.register(50e6, address(0));
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, add2);
+        assertEq(cbdToken.balanceOf(add3), 15e18);
+        assertEq(usdc.balanceOf(add3), 0);
+        assertEq(cbdToken.balanceOf(add2), 20e18);
+        assertEq(purchaseContract.allRewardAmounts(add1), initialReward + reward1 + reward2);
+        assertEq(purchaseContract.allRewardAmounts(add2), initialReward + reward1);
+        vm.stopPrank();
+        
+        // buy token add4
+        vm.startPrank(add4);
+        usdc.approve(address(purchaseContract), 50e6);
+        purchaseContract.register(50e6, address(0));
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, add3);
+        assertEq(cbdToken.balanceOf(add4), 15e18);
+        assertEq(usdc.balanceOf(add4), 0);
+        assertEq(cbdToken.balanceOf(add3), 20e18);
+        assertEq(
+            purchaseContract.allRewardAmounts(add1),
+            initialReward + reward1 + reward2 + reward3
+        );
+        assertEq(purchaseContract.allRewardAmounts(add2), initialReward + reward1 + reward2);
+        assertEq(purchaseContract.allRewardAmounts(add3), initialReward + reward1);
+        vm.stopPrank();
+
+        // buy token add5
+        vm.startPrank(add5);
+        usdc.approve(address(purchaseContract), 50e6);
+        purchaseContract.register(50e6, address(0));
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, add4);
+        assertEq(cbdToken.balanceOf(add5), 15e18);
+        assertEq(usdc.balanceOf(add5), 0);
+        assertEq(cbdToken.balanceOf(add4), 20e18);
+        assertEq(
+            purchaseContract.allRewardAmounts(add1),
+            initialReward + reward1 + reward2 + reward3 + reward4
+        );
+        assertEq(
+            purchaseContract.allRewardAmounts(add2),
+            initialReward + reward1 + reward2 + reward3
+        );
+        assertEq(purchaseContract.allRewardAmounts(add3), initialReward + reward1 + reward2);
+        assertEq(purchaseContract.allRewardAmounts(add4), initialReward + reward1);
+        vm.stopPrank();
+        
+        // buy token add2 again
+        usdc.transfer(add2, 1000e6);
+        vm.startPrank(add2);
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, add3);
+        vm.stopPrank();
+
+        // buy token add6
+        usdc.transfer(add6, 1050e6);
+        vm.startPrank(add6);
+         usdc.approve(address(purchaseContract), 50e6);
+        purchaseContract.register(50e6, address(0));
+        usdc.approve(address(purchaseContract), 1000e6);
+        purchaseContract.buyToken(1000e6, add1);
+        vm.stopPrank();
+
+        //test referred people add1
+        address[] memory add1People = purchaseContract.userReferredPeople(add1);
+        assertEq(add1People[0], add2);
+        assertEq(add1People[1], add6);
+        assertEq(add1People.length, 2);
+        //test referred people add2
+        address[] memory add2People = purchaseContract.userReferredPeople(add2);
+        assertEq(add2People[0], add3);
+        assertEq(add2People.length, 1);
+        //test referred people add3
+        address[] memory add3People = purchaseContract.userReferredPeople(add3);
+        assertEq(add3People[0], add4);
+        assertEq(add3People.length, 1);
+        //test referred people add4
+        address[] memory add4People = purchaseContract.userReferredPeople(add4);
+        assertEq(add4People[0], add5);
+        assertEq(add4People.length, 1);
+        //test referred people add4
+        address[] memory add5People = purchaseContract.userReferredPeople(add5);
+        // assertEq(add5People[0], address(0));
+        assertEq(add5People.length, 0);
+
+    }
+
     /*
     function testPartailPurchaseRewards() public {
         uint initialReward = (500e18*3*90)/100/20;
