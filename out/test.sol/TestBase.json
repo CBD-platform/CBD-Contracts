@@ -178,62 +178,62 @@
   },
   "ast": {
     "absolutePath": "lib/forge-std/src/Test.sol",
-    "id": 8801,
+    "id": 10847,
     "exportedSymbols": {
       "CommonBase": [
-        2925
+        4971
       ],
       "DSTest": [
-        2870
+        4916
       ],
       "StdAssertions": [
-        3752
+        5798
       ],
       "StdChains": [
-        4075
+        6121
       ],
       "StdCheats": [
-        5998
+        8044
       ],
       "StdStorage": [
-        6903
+        8949
       ],
       "StdUtils": [
-        8766
+        10812
       ],
       "Test": [
-        8800
+        10846
       ],
       "TestBase": [
-        8787
+        10833
       ],
       "Vm": [
-        9774
+        11820
       ],
       "console": [
-        17838
+        19884
       ],
       "console2": [
-        25903
+        27949
       ],
       "stdError": [
-        6064
+        8110
       ],
       "stdJson": [
-        6730
+        8776
       ],
       "stdMath": [
-        6872
+        8918
       ],
       "stdStorage": [
-        8337
+        10383
       ]
     },
     "nodeType": "SourceUnit",
     "src": "33:436:15",
     "nodes": [
       {
-        "id": 8768,
+        "id": 10814,
         "nodeType": "PragmaDirective",
         "src": "33:31:15",
         "nodes": [],
@@ -248,23 +248,23 @@
         ]
       },
       {
-        "id": 8770,
+        "id": 10816,
         "nodeType": "ImportDirective",
         "src": "68:40:15",
         "nodes": [],
         "absolutePath": "lib/forge-std/src/Common.sol",
         "file": "./Common.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 8801,
-        "sourceUnit": 2926,
+        "scope": 10847,
+        "sourceUnit": 4972,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 8769,
+              "id": 10815,
               "name": "CommonBase",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 2925,
+              "referencedDeclaration": 4971,
               "src": "76:10:15",
               "typeDescriptions": {}
             },
@@ -274,36 +274,36 @@
         "unitAlias": ""
       },
       {
-        "id": 8771,
+        "id": 10817,
         "nodeType": "ImportDirective",
         "src": "110:26:15",
         "nodes": [],
         "absolutePath": "lib/forge-std/lib/ds-test/src/test.sol",
         "file": "ds-test/test.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 8801,
-        "sourceUnit": 2871,
+        "scope": 10847,
+        "sourceUnit": 4917,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 8784,
+        "id": 10830,
         "nodeType": "ImportDirective",
         "src": "170:154:15",
         "nodes": [],
         "absolutePath": "lib/forge-std/src/Components.sol",
         "file": "./Components.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 8801,
-        "sourceUnit": 2939,
+        "scope": 10847,
+        "sourceUnit": 4985,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 8772,
+              "id": 10818,
               "name": "console",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 17838,
+              "referencedDeclaration": 19884,
               "src": "178:7:15",
               "typeDescriptions": {}
             },
@@ -311,11 +311,11 @@
           },
           {
             "foreign": {
-              "id": 8773,
+              "id": 10819,
               "name": "console2",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 25903,
+              "referencedDeclaration": 27949,
               "src": "187:8:15",
               "typeDescriptions": {}
             },
@@ -323,11 +323,11 @@
           },
           {
             "foreign": {
-              "id": 8774,
+              "id": 10820,
               "name": "StdAssertions",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 3752,
+              "referencedDeclaration": 5798,
               "src": "197:13:15",
               "typeDescriptions": {}
             },
@@ -335,11 +335,11 @@
           },
           {
             "foreign": {
-              "id": 8775,
+              "id": 10821,
               "name": "StdChains",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 4075,
+              "referencedDeclaration": 6121,
               "src": "212:9:15",
               "typeDescriptions": {}
             },
@@ -347,11 +347,11 @@
           },
           {
             "foreign": {
-              "id": 8776,
+              "id": 10822,
               "name": "StdCheats",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 5998,
+              "referencedDeclaration": 8044,
               "src": "223:9:15",
               "typeDescriptions": {}
             },
@@ -359,11 +359,11 @@
           },
           {
             "foreign": {
-              "id": 8777,
+              "id": 10823,
               "name": "stdError",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 6064,
+              "referencedDeclaration": 8110,
               "src": "234:8:15",
               "typeDescriptions": {}
             },
@@ -371,11 +371,11 @@
           },
           {
             "foreign": {
-              "id": 8778,
+              "id": 10824,
               "name": "stdJson",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 6730,
+              "referencedDeclaration": 8776,
               "src": "244:7:15",
               "typeDescriptions": {}
             },
@@ -383,11 +383,11 @@
           },
           {
             "foreign": {
-              "id": 8779,
+              "id": 10825,
               "name": "stdMath",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 6872,
+              "referencedDeclaration": 8918,
               "src": "253:7:15",
               "typeDescriptions": {}
             },
@@ -395,11 +395,11 @@
           },
           {
             "foreign": {
-              "id": 8780,
+              "id": 10826,
               "name": "StdStorage",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 6903,
+              "referencedDeclaration": 8949,
               "src": "262:10:15",
               "typeDescriptions": {}
             },
@@ -407,11 +407,11 @@
           },
           {
             "foreign": {
-              "id": 8781,
+              "id": 10827,
               "name": "stdStorage",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 8337,
+              "referencedDeclaration": 10383,
               "src": "274:10:15",
               "typeDescriptions": {}
             },
@@ -419,11 +419,11 @@
           },
           {
             "foreign": {
-              "id": 8782,
+              "id": 10828,
               "name": "StdUtils",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 8766,
+              "referencedDeclaration": 10812,
               "src": "286:8:15",
               "typeDescriptions": {}
             },
@@ -431,11 +431,11 @@
           },
           {
             "foreign": {
-              "id": 8783,
+              "id": 10829,
               "name": "Vm",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 9774,
+              "referencedDeclaration": 11820,
               "src": "296:2:15",
               "typeDescriptions": {}
             },
@@ -445,7 +445,7 @@
         "unitAlias": ""
       },
       {
-        "id": 8787,
+        "id": 10833,
         "nodeType": "ContractDefinition",
         "src": "328:43:15",
         "nodes": [],
@@ -453,16 +453,16 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 8785,
+              "id": 10831,
               "name": "CommonBase",
               "nameLocations": [
                 "358:10:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 2925,
+              "referencedDeclaration": 4971,
               "src": "358:10:15"
             },
-            "id": 8786,
+            "id": 10832,
             "nodeType": "InheritanceSpecifier",
             "src": "358:10:15"
           }
@@ -472,16 +472,16 @@
         "contractKind": "contract",
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          8787,
-          2925
+          10833,
+          4971
         ],
         "name": "TestBase",
         "nameLocation": "346:8:15",
-        "scope": 8801,
+        "scope": 10847,
         "usedErrors": []
       },
       {
-        "id": 8800,
+        "id": 10846,
         "nodeType": "ContractDefinition",
         "src": "375:92:15",
         "nodes": [],
@@ -489,91 +489,91 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 8788,
+              "id": 10834,
               "name": "DSTest",
               "nameLocations": [
                 "401:6:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 2870,
+              "referencedDeclaration": 4916,
               "src": "401:6:15"
             },
-            "id": 8789,
+            "id": 10835,
             "nodeType": "InheritanceSpecifier",
             "src": "401:6:15"
           },
           {
             "baseName": {
-              "id": 8790,
+              "id": 10836,
               "name": "StdAssertions",
               "nameLocations": [
                 "409:13:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 3752,
+              "referencedDeclaration": 5798,
               "src": "409:13:15"
             },
-            "id": 8791,
+            "id": 10837,
             "nodeType": "InheritanceSpecifier",
             "src": "409:13:15"
           },
           {
             "baseName": {
-              "id": 8792,
+              "id": 10838,
               "name": "StdChains",
               "nameLocations": [
                 "424:9:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 4075,
+              "referencedDeclaration": 6121,
               "src": "424:9:15"
             },
-            "id": 8793,
+            "id": 10839,
             "nodeType": "InheritanceSpecifier",
             "src": "424:9:15"
           },
           {
             "baseName": {
-              "id": 8794,
+              "id": 10840,
               "name": "StdCheats",
               "nameLocations": [
                 "435:9:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 5998,
+              "referencedDeclaration": 8044,
               "src": "435:9:15"
             },
-            "id": 8795,
+            "id": 10841,
             "nodeType": "InheritanceSpecifier",
             "src": "435:9:15"
           },
           {
             "baseName": {
-              "id": 8796,
+              "id": 10842,
               "name": "StdUtils",
               "nameLocations": [
                 "446:8:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 8766,
+              "referencedDeclaration": 10812,
               "src": "446:8:15"
             },
-            "id": 8797,
+            "id": 10843,
             "nodeType": "InheritanceSpecifier",
             "src": "446:8:15"
           },
           {
             "baseName": {
-              "id": 8798,
+              "id": 10844,
               "name": "TestBase",
               "nameLocations": [
                 "456:8:15"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 8787,
+              "referencedDeclaration": 10833,
               "src": "456:8:15"
             },
-            "id": 8799,
+            "id": 10845,
             "nodeType": "InheritanceSpecifier",
             "src": "456:8:15"
           }
@@ -583,19 +583,19 @@
         "contractKind": "contract",
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          8800,
-          8787,
-          2925,
-          8766,
-          5998,
-          5571,
-          4075,
-          3752,
-          2870
+          10846,
+          10833,
+          4971,
+          10812,
+          8044,
+          7617,
+          6121,
+          5798,
+          4916
         ],
         "name": "Test",
         "nameLocation": "393:4:15",
-        "scope": 8801,
+        "scope": 10847,
         "usedErrors": []
       }
     ],

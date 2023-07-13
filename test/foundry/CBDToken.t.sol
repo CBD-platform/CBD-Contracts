@@ -364,13 +364,13 @@ contract CBDTokenTest is Test {
         vm.stopPrank();
     }
 
-    function testBuyTokenWhitoutRef() public {
+    function testBuyTokenWithoutRef() public {
         usdc.transfer(add1, 4000e18);
         vm.startPrank(add1);
         usdc.approve(address(purchaseContract), 50e18);
         purchaseContract.register(50e18, address(0));
         usdc.approve(address(purchaseContract), 5000e18);
-        purchaseContract.buyTokenWhitoutRef(5000e18);
+        purchaseContract.buyTokenWithoutRef(5000e18);
         assertEq(cbdToken.balanceOf(add1), 250e18);
         assertEq(usdc.balanceOf(add1), 0);
         vm.stopPrank();
@@ -439,7 +439,7 @@ contract CBDTokenTest is Test {
         usdc.approve(address(purchaseContract), 50e18);
         purchaseContract.register(50e18, address(0));
         usdc.approve(address(purchaseContract), 5000e18);
-        purchaseContract.buyTokenWhitoutRef(5000e18);
+        purchaseContract.buyTokenWithoutRef(5000e18);
         assertEq(cbdToken.balanceOf(add1), 250e18);
         assertEq(usdc.balanceOf(add1), 0);
         assertEq(usdc.balanceOf(newAdmin), 5000e18 + 50e18);

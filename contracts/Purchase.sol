@@ -15,8 +15,7 @@ contract Purchase {
     AggregatorV3Interface public priceFeed;
 
     address public admin;
-    mapping(address => bool) public owners; //is given address owner 
-
+    mapping(address => bool) public owners; //is given address owner
     mapping(address => bool) public isRegistered;
 
     bool onlyAllowedAmountsStatus;
@@ -34,6 +33,32 @@ contract Purchase {
         uint256 endTime;
         uint256 lastUpdateTime;
     }
+
+    struct Cbd2Rewards {
+        uint256 amount;
+        uint256 startTime;
+        uint256 endTime;
+    }
+
+    //events
+    event TransferUserOwnership(address _from, address _to);
+    event AddOwner(address _newOwner);
+    event RemoveOwner(address _removedOwner);
+    event ChangeAdmin(address _newAdmin);
+    event SetPurchaseToken(address _newToken);
+    event ChangeAllowAmountsActivation(bool _status);
+    event EnableAllawanceForAmount(uint _amount, uint _totalRewardByAmount);
+    event DisableAllawanceForAmount(uint _amount);
+    event SetCBDToken(address _CBDToken);
+    event SetBaseRegisterAmount(uint256 _baseRegisterAmount);
+    event SetTokenPrice(uint256 _newTokenPrice);
+    event Register(address _user, uint _stableCointAmount, address _refer);
+    event BuyToken(address _user, uint256 stableCoinAmount, address _refer1, address _refer2, address _refer3, address _refer4);
+    event BuyTokenWithoutRef(address _user, uint256 stableCoinAmount);
+    event ClaimRewards(address _user);
+    event ClaimPurchaseRewards(address _user);
+    event ClaimReferRewards(address _user);
+    
 
     /**
     @param _cbdToken : CBD token address
@@ -58,10 +83,10 @@ contract Purchase {
         admin = msg.sender;
         //allowed amounts
         onlyAllowedAmountsStatus = true;
-        anableAllawanceForAmount(250*10**purchaseTokenDecimals, 500*10**purchaseTokenDecimals);
-        anableAllawanceForAmount(500*10**purchaseTokenDecimals, 1500*10**purchaseTokenDecimals);
-        anableAllawanceForAmount(1000*10**purchaseTokenDecimals, 3000*10**purchaseTokenDecimals);
-        anableAllawanceForAmount(2000*10**purchaseTokenDecimals, 6000*10**purchaseTokenDecimals);
+        enableAllawanceForAmount(250*10**purchaseTokenDecimals, 500*10**purchaseTokenDecimals);
+        enableAllawanceForAmount(500*10**purchaseTokenDecimals, 1500*10**purchaseTokenDecimals);
+        enableAllawanceForAmount(1000*10**purchaseTokenDecimals, 3000*10**purchaseTokenDecimals);
+        enableAllawanceForAmount(2000*10**purchaseTokenDecimals, 6000*10**purchaseTokenDecimals);
     }
 
     
@@ -71,6 +96,12 @@ contract Purchase {
     mapping(address => address[]) public referredPeople;
     //history
     mapping(address => uint) public instantReferRewardHistory;
+    mapping(address => uint) public dailyReferRewardHistory;
+    mapping(address => uint) public boughtMembershipHistory;
+    mapping(address => uint) public boughtInvestingHistory;
+    //cbd2
+    mapping(address => Cbd2Rewards[]) public cbd2Rewards;
+
 
 
     function isOwner(address _user) public view returns(bool){
@@ -96,18 +127,24 @@ contract Purchase {
     function transferUserOwnership(address _newOwner) public onlyOwners{
         owners[msg.sender] = false;
         owners[_newOwner] = true;
+
+        emit TransferUserOwnership(msg.sender, _newOwner);
     }
 
     function addOwner(address _newOwner) public onlyOwners{
         owners[_newOwner] = true;
+
+        emit AddOwner(_newOwner);
     }
 
     function removeOwner(address _newOwner) public onlyOwners{
         owners[_newOwner] = false;
+        emit RemoveOwner(_newOwner);
     }
 
     function changeAdmin(address _newAdmin) public onlyOwners{
         admin = _newAdmin;
+        emit ChangeAdmin(_newAdmin);
     }
 
 
@@ -138,23 +175,27 @@ contract Purchase {
             "Purchase token can not be zero address"
         );
         purchaseToken = _purchaseToken;
+        emit SetPurchaseToken(_purchaseToken);
     }
 
     // enable or disable allowAmounts trading
     function changeAllowAmountsActivation(bool _status) public onlyOwners {
         onlyAllowedAmountsStatus = _status;
+        emit ChangeAllowAmountsActivation(_status);
     }
 
     // allow amounts trading
-    function anableAllawanceForAmount(uint _amount, uint _totalRewardByAmount) public onlyOwners {
+    function enableAllawanceForAmount(uint _amount, uint _totalRewardByAmount) public onlyOwners {
         allowedAmounts[_amount].isAllowed = true;
         allowedAmounts[_amount].totalReward = _totalRewardByAmount;
+        emit EnableAllawanceForAmount(_amount, _totalRewardByAmount);
     }
 
     // disAllow amounts trading
     function disableAllawanceForAmount(uint _amount) public onlyOwners {
         allowedAmounts[_amount].isAllowed = false;
         allowedAmounts[_amount].totalReward = 0;
+        emit DisableAllawanceForAmount(_amount);
     }
 
 
@@ -163,11 +204,14 @@ contract Purchase {
     function setCBDToken(address _CBDToken) public onlyOwners {
         require(_CBDToken != address(0), "CBD token can not be zero address");
         cbdToken = CBDToken(_CBDToken);
+        emit SetCBDToken(_CBDToken);
+
     }
 
     function setBaseRegisterAmount(uint256 _baseRegisterAmount) public onlyOwners {
         require(_baseRegisterAmount != 0, "Base register amount can not be zero");
         baseRegisterAmount = _baseRegisterAmount;
+        emit SetBaseRegisterAmount(_baseRegisterAmount);
     }
 
     // referredPeople
@@ -195,6 +239,15 @@ contract Purchase {
         returns (UserRewards[] memory)
     {
         return referRewards[_user];
+    }
+
+    //return all cbd2 rewards of a user (in an array of the structurs)
+    function userCbd2Rewards(address _user)
+        public
+        view
+        returns (Cbd2Rewards[] memory)
+    {
+        return cbd2Rewards[_user];
     }
 
     //return all purchase reward amounts of a user
@@ -236,6 +289,16 @@ contract Purchase {
         return allRewards;
     }
 
+    //return all cbd2 reward amounts of a user
+    function allCb2RewardAmounts(address _user) public view returns (uint256) {
+        uint256 allRewards = 0;
+        for (uint256 i = 0; i < cbd2Rewards[_user].length; i++) {
+            if (cbd2Rewards[_user][i].amount > 0) {
+                allRewards += cbd2Rewards[_user][i].amount;
+            }
+        }
+        return allRewards;
+    }
 
     //return all purchase reward amounts of a user
     function allPurchaseTotalRewardAmounts(address _user) public view returns (uint256) {
@@ -313,6 +376,28 @@ contract Purchase {
         return unClaimedRewards;
     }
 
+
+    function getCb2RewardsUntillNow(address _user) public view returns (uint256) {
+        uint256 unClaimedRewards = 0;
+        //for cbd rewards
+        for (uint256 i = 0; i < cbd2Rewards[_user].length; i++) {
+            if (cbd2Rewards[_user][i].amount > 0) {
+                if (block.timestamp < cbd2Rewards[_user][i].endTime) {
+                    uint256 allRemainPeriod = cbd2Rewards[_user][i].endTime -
+                        cbd2Rewards[_user][i].startTime;
+                    uint256 unClaimedPeriod = block.timestamp -
+                        cbd2Rewards[_user][i].startTime;
+                    uint256 unClaimedAmount = (cbd2Rewards[_user][i].amount *
+                        unClaimedPeriod) / allRemainPeriod;
+                    unClaimedRewards += unClaimedAmount;
+                } else {
+                    unClaimedRewards += cbd2Rewards[_user][i].amount;
+                }
+            }
+        }
+        return unClaimedRewards;
+    }
+
     /**
     @dev set token price by the owner (should be in wei)
     @param _newTokenPrice should be on format of purchase token price (18 decimal or other)
@@ -320,6 +405,7 @@ contract Purchase {
      */
     function setTokenPrice(uint256 _newTokenPrice) public onlyOwners {
         tokenPrice = _newTokenPrice;
+        emit SetTokenPrice(_newTokenPrice);
     }
 
     /**
@@ -354,6 +440,7 @@ contract Purchase {
                 //set _refer for msg.sender
                 refer[msg.sender] = _refer;
             }
+        emit Register(msg.sender, stableCoinAmount, _refer);
     }
 
     /**
@@ -398,6 +485,14 @@ contract Purchase {
                         block.timestamp
                     )
                 );
+            //store cbbd2
+            cbd2Rewards[msg.sender].push(
+                Cbd2Rewards(
+                    stableCoinAmount*1e18/10**ERC20(purchaseToken).decimals(),
+                    block.timestamp,
+                    block.timestamp + 1095 days
+                )
+            );                
         }else{
         //perform purchase for user
         cbdToken.mint(msg.sender, quantity);
@@ -434,6 +529,7 @@ contract Purchase {
                         block.timestamp
                     )
                 );
+                dailyReferRewardHistory[refer1] += (95e17 * quantity) / baseQuantity;
             }
             // set refer2 rewards
             if (refer2 != address(0) && cbdToken.balanceOf(refer2) > 0) {
@@ -445,6 +541,7 @@ contract Purchase {
                         block.timestamp
                     )
                 );
+                dailyReferRewardHistory[refer2] += (75e17 * quantity) / baseQuantity;
             }
             // set refer3 rewards
             if (refer3 != address(0) && cbdToken.balanceOf(refer3) > 0) {
@@ -456,6 +553,7 @@ contract Purchase {
                         block.timestamp
                     )
                 );
+                dailyReferRewardHistory[refer3] += (6e18 * quantity) / baseQuantity;
             }
             // set refer4 rewards
             if (refer4 != address(0) && cbdToken.balanceOf(refer4) > 0) {
@@ -467,11 +565,16 @@ contract Purchase {
                         block.timestamp
                     )
                 );
+                dailyReferRewardHistory[refer4] += (4e18 * quantity) / baseQuantity;
             }
+            emit BuyToken(msg.sender, stableCoinAmount, refer1, refer2, refer3, refer4);
         }
+        boughtMembershipHistory[msg.sender] += stableCoinAmount;
+        emit BuyToken(msg.sender, stableCoinAmount, _refer, address(0), address(0), address(0));
+
     }
 
-    function buyTokenWhitoutRef(uint256 stableCoinAmount) public {
+    function buyTokenWithoutRef(uint256 stableCoinAmount) public {
         require(isRegistered[msg.sender] == true, "You are not registered");
         uint256 usdcOraclePrice = getOracleUsdcPrice();
         require(usdcOraclePrice >= 95e16, "USDC price is not above 0.95 $");
@@ -488,6 +591,8 @@ contract Purchase {
             admin,
             stableCoinAmount
         );
+        boughtInvestingHistory[msg.sender] += stableCoinAmount;
+        emit BuyTokenWithoutRef(msg.sender, stableCoinAmount);
     }
 
     function _deletePurchaseRewardObject(address _user, uint256 _rewardIndex) internal {
@@ -561,7 +666,7 @@ contract Purchase {
             }
         }
         cbdToken.mint(msg.sender, tokenAmountToMint);
-
+        emit ClaimRewards(msg.sender);
         //delet zero purchase object
         for (uint256 i = 0; i < purchaseRewards[msg.sender].length; i++) {
             if (purchaseRewards[msg.sender][i].rewardAmount == 0) {
@@ -608,7 +713,7 @@ contract Purchase {
         }
         
         cbdToken.mint(msg.sender, tokenAmountToMint);
-
+        emit ClaimPurchaseRewards(msg.sender);
         //delet zero purchase object
         for (uint256 i = 0; i < purchaseRewards[msg.sender].length; i++) {
             if (purchaseRewards[msg.sender][i].rewardAmount == 0) {
@@ -648,7 +753,7 @@ contract Purchase {
             }
         }
         cbdToken.mint(msg.sender, tokenAmountToMint);
-
+        emit ClaimReferRewards(msg.sender);
         //delet zero refer object
         for (uint256 i = 0; i < referRewards[msg.sender].length; i++) {
             if (referRewards[msg.sender][i].rewardAmount == 0) {
